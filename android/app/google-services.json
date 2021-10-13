@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "717746082059",
+    "project_id": "bounce-e813b",
+    "storage_bucket": "bounce-e813b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717746082059:android:8792dd505032379ab7520e",
+        "android_client_info": {
+          "package_name": "com.maahey.bounce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717746082059-p5496bkfhom72n2gobfdeit7tt6gc22e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHr2Id0dbuEXJ-yVt2dPfwIaGsfjDKBgY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717746082059-p5496bkfhom72n2gobfdeit7tt6gc22e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
