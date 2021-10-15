@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mediumreplica/Screens/settings.dart';
@@ -13,6 +14,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final auth = FirebaseAuth.instance;
+  String? currUser = FirebaseAuth.instance.currentUser?.displayName;
+  String? dp = FirebaseAuth.instance.currentUser?.photoURL;
+
+  Future<void> getCurrentUserInfo() async {
+    User user = auth.currentUser!;
+    setState(() {
+      currUser = user.toString();
+    });
+  }
+
   int index = 0;
   @override
   Widget build(BuildContext context) {
@@ -57,18 +69,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: size.height * 0.08,
                         height: size.height * 0.08,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.grey,
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                              image: NetworkImage(
-                                  'https://images.weserv.nl/?url=https://areknawo.com/content/images/2020/06/logo-circle-small.png&w=120&h=120&output=webp'),
-                              fit: BoxFit.fill),
+                              image: NetworkImage('$dp'), fit: BoxFit.fill),
                         ),
                       ),
                       Container(
                         width: size.width * 0.6,
                         child: Text(
-                          'Laiba Ahmad',
+                          '$currUser',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           softWrap: false,
@@ -101,11 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: size.width * 0.9,
               height: size.height * 0.04,
-              child: Divider(
-                color: theme.getTheme().brightness == Brightness.dark
-                    ? Colors.white54
-                    : Colors.black54,
-              ),
+              child: Divider(),
             ),
             IntrinsicHeight(
               child: Row(
@@ -130,11 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: size.width * 0.9,
               height: size.height * 0.04,
-              child: Divider(
-                color: theme.getTheme().brightness == Brightness.dark
-                    ? Colors.white54
-                    : Colors.black54,
-              ),
+              child: Divider(),
             ),
             SizedBox(
               child: Row(

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "717746082059-t3hpbr0ql5mslpk9n6kdgk39t5vqp8sc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maahey.bounce",
+            "certificate_hash": "556aec5898cd10a031dc8d5677ed453f24b80afd"
+          }
+        },
+        {
           "client_id": "717746082059-p5496bkfhom72n2gobfdeit7tt6gc22e.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "717746082059-p5496bkfhom72n2gobfdeit7tt6gc22e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "717746082059-a4tti1ampmnklsism2k9jpjblr4hkqjs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.maahey.bounce"
+              }
             }
           ]
         }

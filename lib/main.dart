@@ -1,12 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mediumreplica/Screens/login.dart';
 import 'package:provider/provider.dart';
+import 'Models/user.dart';
+import 'Models/wrapper.dart';
+import 'Services/auth.dart';
 import 'Shared Prefrences/theme_manager.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  //await GetStorage.init();
   runApp(
-    ChangeNotifierProvider<ThemeNotifier>(
-      create: (_) => new ThemeNotifier(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeNotifier>(
+            create: (_) => new ThemeNotifier()),
+      ],
       child: MyApp(),
     ),
   );
@@ -16,23 +25,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Provider.of<ThemeNotifier>(context);
-    // ThemeData myTheme = ThemeData(
-    //   primarySwatch: generateMaterialColor(Palette.primary),
-    // );
 
-    return MaterialApp(
-      themeMode: ThemeMode.system,
-      theme: theme.getTheme(),
-      // theme: ThemeData.light(), // Provide light theme
-      // darkTheme: ThemeData.dark(), // Provide dark theme
-      // theme: myTheme,
-      // darkTheme: ThemeData(
-      //   primarySwatch: generateMaterialColor(Palette.primary),
-      //   brightness: Brightness.dark,
-      // ),
-      debugShowCheckedModeBanner: false,
-      // ignore: unnecessary_null_comparison
-      home: theme.getTheme() == null ? Container() : LoginScreen(),
+    return StreamProvider<Users?>.value(
+      value: AuthService().user,
+      initialData: null,
+      child: MaterialApp(
+        themeMode: ThemeMode.system,
+        // theme: theme.getTheme(),
+        darkTheme: theme.getTheme(),
+        debugShowCheckedModeBanner: false,
+        home: Wrapper(),
+      ),
     );
   }
 }

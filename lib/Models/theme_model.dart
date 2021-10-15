@@ -4,7 +4,7 @@ class ThemeModel {
   final darkTheme = ThemeData(
     primaryColor: Colors.black,
     backgroundColor: const Color(0xFF212121),
-    dividerColor: Colors.black12,
+    dividerColor: Colors.grey[700],
     iconTheme: IconThemeData(color: Colors.white),
     appBarTheme: AppBarTheme(color: Colors.black),
     floatingActionButtonTheme:
@@ -23,7 +23,7 @@ class ThemeModel {
   final lightTheme = ThemeData(
     primaryColor: Colors.white,
     backgroundColor: const Color(0xFFFAFAFA),
-    dividerColor: Colors.white54,
+    dividerColor: Colors.black54,
     iconTheme: IconThemeData(color: Colors.black),
     floatingActionButtonTheme:
         FloatingActionButtonThemeData(foregroundColor: Colors.white),

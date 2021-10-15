@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mediumreplica/Screens/edit_profile.dart';
+import 'package:mediumreplica/Screens/login.dart';
+import 'package:mediumreplica/Services/auth.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +14,8 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final AuthService auth = AuthService();
+
   @override
   Widget build(BuildContext context) {
     var theme = Provider.of<ThemeNotifier>(context);
@@ -54,11 +58,7 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
             ),
-            Divider(
-              color: theme.getTheme().brightness == Brightness.dark
-                  ? Colors.grey[700]
-                  : Colors.black54,
-            ),
+            Divider(),
             GestureDetector(
               // onTap: () {
               //   Navigator.push(context,
@@ -74,11 +74,7 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
             ),
-            Divider(
-              color: theme.getTheme().brightness == Brightness.dark
-                  ? Colors.grey[700]
-                  : Colors.black54,
-            ),
+            Divider(),
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
@@ -94,25 +90,28 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
             ),
-            Divider(
-              color: theme.getTheme().brightness == Brightness.dark
-                  ? Colors.grey[700]
-                  : Colors.black54,
-            ),
-            Container(
-              height: size.height * 0.05,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Sign Out'),
-                ],
+            Divider(),
+            InkWell(
+              onTap: () async {
+                await auth.signOut();
+
+                // Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    (route) => false);
+              },
+              child: Container(
+                height: size.height * 0.05,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Sign Out'),
+                  ],
+                ),
               ),
             ),
-            Divider(
-              color: theme.getTheme().brightness == Brightness.dark
-                  ? Colors.grey[700]
-                  : Colors.black54,
-            ),
+            Divider(),
           ],
         ),
       ),

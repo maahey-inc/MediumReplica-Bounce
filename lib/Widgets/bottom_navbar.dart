@@ -3,6 +3,8 @@ import 'package:mediumreplica/Screens/lists.dart';
 import 'package:mediumreplica/Screens/search.dart';
 import 'package:mediumreplica/Screens/profile.dart';
 import 'package:mediumreplica/Screens/home.dart';
+import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,9 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Icon profile = Icon(
     Icons.account_circle_outlined,
   );
-  Icon group = Icon(
-    Icons.collections_bookmark_outlined,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.purple,
       ),
     ];
+    var theme = Provider.of<ThemeNotifier>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: theme.getTheme().brightness == Brightness.dark
+          ? Theme.of(context).backgroundColor
+          : Colors.grey[100],
 
       body: pages.elementAt(selectedIndex),
 
@@ -75,10 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             label: 'Profile',
             icon: profile,
-          ),
-          BottomNavigationBarItem(
-            label: 'Groups',
-            icon: group,
           ),
         ],
       ),
@@ -111,8 +109,5 @@ class _HomeScreenState extends State<HomeScreen> {
     selectedIndex == 3
         ? profile = Icon(Icons.account_circle)
         : profile = Icon(Icons.account_circle_outlined);
-    selectedIndex == 4
-        ? group = Icon(Icons.collections_bookmark)
-        : group = Icon(Icons.collections_bookmark_outlined);
   }
 }
