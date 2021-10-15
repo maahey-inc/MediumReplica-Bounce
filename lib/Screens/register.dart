@@ -4,8 +4,6 @@ import 'package:mediumreplica/Services/auth.dart';
 import 'package:mediumreplica/Services/loading.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
 import 'package:mediumreplica/Widgets/bottom_navbar.dart';
-import 'package:mediumreplica/Widgets/or_divider.dart';
-import 'package:mediumreplica/Widgets/socialLogin.dart';
 import 'package:mediumreplica/Screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
