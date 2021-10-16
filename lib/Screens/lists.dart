@@ -10,10 +10,10 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  int index = 0;
+
   @override
   Widget build(BuildContext context) {
-    int index = 0;
-
     Size size = MediaQuery.of(context).size;
 
     var theme = Provider.of<ThemeNotifier>(context);
@@ -38,7 +38,7 @@ class _ListScreenState extends State<ListScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  GestureDetector(
+                  InkWell(
                     onTap: () {
                       setState(() {
                         index = 0;
@@ -55,12 +55,8 @@ class _ListScreenState extends State<ListScreen> {
                       ),
                     ),
                   ),
-                  VerticalDivider(
-                    color: theme.getTheme().brightness == Brightness.dark
-                        ? Colors.white54
-                        : Colors.black54,
-                  ),
-                  GestureDetector(
+                  VerticalDivider(),
+                  InkWell(
                     onTap: () {
                       setState(() {
                         index = 1;

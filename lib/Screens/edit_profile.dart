@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class EditProfile extends StatefulWidget {
@@ -15,6 +20,50 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController name = TextEditingController();
 
   TextEditingController description = TextEditingController();
+
+  final auth = FirebaseAuth.instance;
+  String? userName = FirebaseAuth.instance.currentUser?.displayName;
+  String? dp = FirebaseAuth.instance.currentUser?.photoURL;
+
+  File? dpNew;
+
+  bool permission = false;
+
+  Future<dynamic> getPermission() async {
+    if (await Permission.storage.status.isDenied ||
+        await Permission.photos.status.isDenied) {
+      var storageStatus = Platform.isAndroid
+          ? await Permission.storage.request()
+          : await Permission.photos.request();
+      if (storageStatus.isGranted) {
+        getNewDp();
+      }
+    }
+  }
+
+  Future<dynamic> getNewDp() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      dpNew = File(image!.path);
+    });
+
+    // Image.file(dpNew!, fit: BoxFit.cover);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      name.value = TextEditingValue(
+        text: userName!,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: userName!.length),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +84,17 @@ class _EditProfileState extends State<EditProfile> {
         actions: [
           IconButton(
               onPressed: () {
+                setState(() {
+                  FirebaseAuth.instance.currentUser
+                      ?.updateDisplayName(name.text);
+
+                  if (dpNew?.path == null) {
+                  } else {
+                    // FirebaseAuth.instance.currentUser
+                    //     ?.updatePhotoURL('${dpNew!.path.characters}');
+                    print('${dpNew!.path.characters}');
+                  }
+                });
                 Navigator.pop(context);
               },
               icon: Icon(Icons.done)),
@@ -53,15 +113,22 @@ class _EditProfileState extends State<EditProfile> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: NetworkImage(
-                            'https://images.weserv.nl/?url=https://areknawo.com/content/images/2020/06/logo-circle-small.png&w=120&h=120&output=webp'),
-                        fit: BoxFit.fill),
+                    // image: DecorationImage(
+                    //      image: NetworkImage('$dp'), fit: BoxFit.fill),
                   ),
+                  child: dpNew?.path == null
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage('$dp'),
+                          radius: 200.0,
+                        )
+                      : CircleAvatar(
+                          backgroundImage: FileImage(dpNew!),
+                          radius: 200.0,
+                        ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    //
+                    getNewDp();
                   },
                   child: Container(
                     width: size.width * 0.6,

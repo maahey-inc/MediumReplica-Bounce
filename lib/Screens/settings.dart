@@ -59,7 +59,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             Divider(),
-            GestureDetector(
+            InkWell(
               // onTap: () {
               //   Navigator.push(context,
               //       MaterialPageRoute(builder: (context) => EditProfile()));
@@ -75,7 +75,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             Divider(),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => EditProfile()));
@@ -86,6 +86,22 @@ class _SettingsState extends State<Settings> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Edit Profile'),
+                  ],
+                ),
+              ),
+            ),
+            Divider(),
+            InkWell(
+              onTap: () {
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => EditProfile()));
+              },
+              child: Container(
+                height: size.height * 0.05,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Your Tags'),
                   ],
                 ),
               ),

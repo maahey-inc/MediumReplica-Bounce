@@ -15,16 +15,30 @@ class DatabaseService {
     });
   }
 
-  // Future<void> storeUserData(
-  //     String name, String quant, String cost, String sale, String time) async {
-  //   return await collection.document(uid).collection("Products").add({
-  //     'Name': name,
-  //     'Quantity': quant,
-  //     'Cost': cost,
-  //     'Sale': sale,
-  //     'TimeStamp': time,
-  //   });
-  // }
+//sav user data
+  Future<DocumentReference<Map<String, dynamic>>> userProfile(
+      String name, String bio, int followers, int following, String uid) async {
+    return await collection.doc(uid).collection("Profile").add({
+      'name': name,
+      'bio': bio,
+      'followers': followers,
+      'following': following,
+      'uid': uid,
+    });
+  }
+
+//save articles
+  Future<DocumentReference<Map<String, dynamic>>> storeArticle(String article,
+      String time, String tags, int likes, String comments, String uid) async {
+    return await collection.doc(uid).collection("Articles").add({
+      'Article': article,
+      'Tags': tags,
+      'Likes': likes,
+      'Comments': comments,
+      'TimeStamp': time,
+      'uid': uid,
+    });
+  }
 
   // List<UserDetails> detailsFromSnapshot(QuerySnapshot snapshot) {
   //   return snapshot.documents.map((doc) {

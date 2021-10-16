@@ -148,10 +148,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         index = 0;
                       });
                     },
-                    child: Text(
-                      'Articles',
-                      style: TextStyle(
-                          color: index == 0 ? Colors.white : Colors.grey),
+                    child: Container(
+                      width: size.width * 0.4,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 2.0,
+                            color: index == 0
+                                ? theme.getTheme().brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black
+                                : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Text(
+                            'Articles',
+                            style: TextStyle(
+                                color: index == 0 ? Colors.white : Colors.grey),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -160,10 +180,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         index = 1;
                       });
                     },
-                    child: Text(
-                      'Videos',
-                      style: TextStyle(
-                          color: index == 1 ? Colors.white : Colors.grey),
+                    child: Container(
+                      width: size.width * 0.4,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 2.0,
+                            color: index == 1
+                                ? theme.getTheme().brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black
+                                : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Text(
+                            'Videos',
+                            style: TextStyle(
+                                color: index == 1 ? Colors.white : Colors.grey),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],

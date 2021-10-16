@@ -1,7 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mediumreplica/Models/user.dart';
 import 'db.dart';
@@ -89,36 +86,36 @@ class AuthService {
     //
   }
 
-  Future signInWithFacebook() async {
-    try {
-      final facebookLoginResult = await FacebookAuth.instance.login();
+  // Future signInWithFacebook() async {
+  //   try {
+  //     final facebookLoginResult = await FacebookAuth.instance.login();
 
-      if (facebookLoginResult != null) {
-        final AuthCredential facebookAuthCredential =
-            FacebookAuthProvider.credential(
-                facebookLoginResult.accessToken!.token);
+  //     if (facebookLoginResult != null) {
+  //       final AuthCredential facebookAuthCredential =
+  //           FacebookAuthProvider.credential(
+  //               facebookLoginResult.accessToken!.token);
 
-        final authResult =
-            await auth.signInWithCredential(facebookAuthCredential);
+  //       final authResult =
+  //           await auth.signInWithCredential(facebookAuthCredential);
 
-        print('Result of user ${authResult.user}');
-        final User? user = authResult.user;
+  //       print('Result of user ${authResult.user}');
+  //       final User? user = authResult.user;
 
-        await DatabaseService(uid: user!.uid)
-            .updateUserData(user.email!, user.displayName!);
+  //       await DatabaseService(uid: user!.uid)
+  //           .updateUserData(user.email!, user.displayName!);
 
-        return userFromFirebaseUser(user);
-      } else {
-        throw PlatformException(
-          code: 'ERROR_ABORTED_BY_USER',
-          message: 'Sign In aborted by user',
-        );
-      }
-    } catch (e) {
-      print('Error: ${e.toString()}');
-      return null;
-    }
-  }
+  //       return userFromFirebaseUser(user);
+  //     } else {
+  //       throw PlatformException(
+  //         code: 'ERROR_ABORTED_BY_USER',
+  //         message: 'Sign In aborted by user',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print('Error: ${e.toString()}');
+  //     return null;
+  //   }
+  // }
 
   //sign out
   Future signOut() async {
