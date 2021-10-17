@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediumreplica/Screens/articleScreen.dart';
+import 'package:mediumreplica/Screens/user_article.dart';
 
 class Article {
   String? logo, author, title, img, article;
@@ -51,13 +53,18 @@ List<Article> getArticles() {
 }
 
 class StackArticle extends StatelessWidget {
-  final String logo, author, title, img;
+  final String logo, author, uid, title, img;
+  final dynamic article;
+  final DocumentSnapshot doc;
   final int like;
 
   const StackArticle(
       {Key? key,
       required this.logo,
+      required this.article,
+      required this.doc,
       required this.author,
+      required this.uid,
       required this.title,
       required this.img,
       required this.like})
@@ -68,32 +75,49 @@ class StackArticle extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ArticleScreen(
-                      img: img,
+                builder: (context) => UserArticle(
+                      doc: doc,
                       logo: logo,
+                      uid: uid,
                       author: author,
                       title: title,
                       like: like,
-                      article:
-                          "If you're reading this post, I bet you know or maybe even use VS Code. This fact alone tells us a lot about the VS Code's popularity. Millions of developers around the world from many different fields of software use this editor for their daily work. But why's that?\n\n In this article, I'd like to go over some of the most important reasons behind the VS Code's popularity. We all know that the general answer is '''because it's good''', but I'd like to go deeper than that. To explore what makes a really good code editor and how it's done! I think it's safe to say that VS Code is most popular among web developers. And it's not without a reason. The language that most web developers are accustomed to is - of course - JavaScript. And what's powering VS Code and with what does it integrate best? You guessed it, JavaScript! \n\nOn the inside, the VS Code is built using Electron - a framework for creating desktop apps with JavaScript with the help of Chromium and Node.js. Many web developers using VS Code are aware of and appreciate this fact. Not all do, mainly because of Electron apps notorious high memory usage and low performance, but there are still people who appreciate how meta this is - you write JavaScript in a JavaScript app!\n\nWithout a doubt, one of the biggest advantages of the VS Code is its simplicity. From the first steps to the UI to discovering new functionalities, everything in VS Code feels simple.",
+                      article: article,
                     )));
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection("Recent")
+            .doc(doc.id)
+            .set({
+          'article': article,
+          'title': title,
+          'likes': like,
+          'uid': uid,
+          'author': author,
+          'dp': logo,
+          'img': doc.get('img'),
+          'doc': doc.id,
+        });
       },
       child: Card(
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: size.width * 0.7,
+                width: size.width * 0.6,
                 child: Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 4),
+                          vertical: 8, horizontal: 0),
                       child: Row(
                         children: [
                           Container(
@@ -103,7 +127,7 @@ class StackArticle extends StatelessWidget {
                               color: Colors.grey,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                  image: NetworkImage(logo), fit: BoxFit.fill),
+                                  image: NetworkImage(logo), fit: BoxFit.cover),
                             ),
                           ),
                           Padding(
@@ -120,14 +144,20 @@ class StackArticle extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: Row(
                         children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                          Container(
+                            width: size.width * 0.55,
+                            child: Text(
+                              title,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ],
@@ -135,7 +165,7 @@ class StackArticle extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 8),
+                          horizontal: 0, vertical: 8),
                       child: Row(
                         children: [
                           Icon(
@@ -158,15 +188,18 @@ class StackArticle extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(3),
-                  image: DecorationImage(
-                    image: NetworkImage(img),
-                    fit: BoxFit.cover,
+              SizedBox(
+                width: size.width * 0.2,
+                child: Container(
+                  height: 70,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(3),
+                    image: DecorationImage(
+                      image: NetworkImage(img),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediumreplica/Models/articles.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
@@ -11,6 +12,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  DocumentSnapshot? doc;
+
   bool searchState = false;
 
   @override
@@ -108,6 +111,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 itemCount: 8,
                 itemBuilder: (context, index) {
                   return StackArticle(
+                    doc: doc!,
+                    uid: '345',
+                    article: 'Hi',
                     logo:
                         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
                     author: 'Arthur Conan Doyle',

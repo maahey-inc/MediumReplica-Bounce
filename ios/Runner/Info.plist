@@ -43,7 +43,13 @@
 	<false/>
 
 	<key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs to use Photos</string>
+		<string>This app needs to use Photos</string>
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
 
 
 </dict>

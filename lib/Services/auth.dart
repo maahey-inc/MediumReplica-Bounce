@@ -51,7 +51,9 @@ class AuthService {
       auth.currentUser?.updateDisplayName(name);
       auth.currentUser?.updatePhotoURL(img);
 
-      await DatabaseService(uid: user.uid).updateUserData(email, name);
+      // await DatabaseService(uid: user.uid).updateUserData(email, name);
+      await DatabaseService(uid: user.uid)
+          .userProfile(name, '', img, 0, 0, user.uid);
 
       return userFromFirebaseUser(user);
     } catch (e) {
@@ -73,17 +75,13 @@ class AuthService {
       final User? user = authResult.user;
 
       await DatabaseService(uid: user!.uid)
-          .updateUserData(user.email!, user.displayName!);
-
-      // userFromFirebaseUser(user);
+          .userProfile(user.displayName!, '', user.photoURL!, 0, 0, user.uid);
 
       return userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
       return null;
     }
-
-    //
   }
 
   // Future signInWithFacebook() async {

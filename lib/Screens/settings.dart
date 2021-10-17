@@ -1,19 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mediumreplica/Screens/choose_tags.dart';
 import 'package:mediumreplica/Screens/edit_profile.dart';
 import 'package:mediumreplica/Screens/login.dart';
 import 'package:mediumreplica/Services/auth.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  _SettingsState createState() => _SettingsState();
+  _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsScreenState extends State<SettingsScreen> {
   final AuthService auth = AuthService();
 
   @override
@@ -69,7 +70,7 @@ class _SettingsState extends State<Settings> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Start your Pulication'),
+                    Text('Your Pulication'),
                   ],
                 ),
               ),
@@ -93,8 +94,8 @@ class _SettingsState extends State<Settings> {
             Divider(),
             InkWell(
               onTap: () {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => EditProfile()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TagsScreen()));
               },
               child: Container(
                 height: size.height * 0.05,

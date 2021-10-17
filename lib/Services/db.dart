@@ -15,12 +15,13 @@ class DatabaseService {
     });
   }
 
-//sav user data
-  Future<DocumentReference<Map<String, dynamic>>> userProfile(
-      String name, String bio, int followers, int following, String uid) async {
-    return await collection.doc(uid).collection("Profile").add({
+//save user data
+  Future<void> userProfile(String name, String bio, String dp, int followers,
+      int following, String uid) async {
+    return await collection.doc(uid).collection("Profile").doc(uid).set({
       'name': name,
       'bio': bio,
+      'dp': dp,
       'followers': followers,
       'following': following,
       'uid': uid,
@@ -28,18 +29,38 @@ class DatabaseService {
   }
 
 //save articles
-  Future<DocumentReference<Map<String, dynamic>>> storeArticle(String article,
-      String time, String tags, int likes, String comments, String uid) async {
+  Future<DocumentReference<Map<String, dynamic>>> storeArticle(
+      String article,
+      String title,
+      String time,
+      List<dynamic> tags,
+      int likes,
+      String comments,
+      String uid,
+      String authorName,
+      String dp) async {
     return await collection.doc(uid).collection("Articles").add({
-      'Article': article,
-      'Tags': tags,
-      'Likes': likes,
-      'Comments': comments,
-      'TimeStamp': time,
+      'article': article,
+      'title': title,
+      'tags': tags,
+      'likes': likes,
+      'comments': comments,
+      'timeStamp': time,
       'uid': uid,
+      'author': authorName,
+      'dp': dp,
     });
   }
 
+//get articles
+  Future<Stream<Null>> getArticle(String article, String time, String tags,
+      int likes, String comments, String uid) async {
+    return collection
+        .doc(uid)
+        .collection("Articles")
+        .snapshots()
+        .map((data) {});
+  }
   // List<UserDetails> detailsFromSnapshot(QuerySnapshot snapshot) {
   //   return snapshot.documents.map((doc) {
   //     //print(doc.data);

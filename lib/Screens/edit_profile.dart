@@ -1,6 +1,7 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
@@ -19,15 +20,17 @@ class _EditProfileState extends State<EditProfile> {
 
   TextEditingController name = TextEditingController();
 
-  TextEditingController description = TextEditingController();
+  TextEditingController bio = TextEditingController();
+
+  final FirebaseStorage fstorage = FirebaseStorage.instance;
+  late UploadTask uploadTask;
 
   final auth = FirebaseAuth.instance;
+  String? userId = FirebaseAuth.instance.currentUser!.uid;
   String? userName = FirebaseAuth.instance.currentUser?.displayName;
   String? dp = FirebaseAuth.instance.currentUser?.photoURL;
 
   File? dpNew;
-
-  bool permission = false;
 
   Future<dynamic> getPermission() async {
     if (await Permission.storage.status.isDenied ||
@@ -38,6 +41,8 @@ class _EditProfileState extends State<EditProfile> {
       if (storageStatus.isGranted) {
         getNewDp();
       }
+    } else {
+      getNewDp();
     }
   }
 
@@ -45,9 +50,12 @@ class _EditProfileState extends State<EditProfile> {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      dpNew = File(image!.path);
-    });
+    if (image != null) {
+      setState(() {
+        dpNew = File(image.path);
+        uploadFile(dpNew!);
+      });
+    }
 
     // Image.file(dpNew!, fit: BoxFit.cover);
   }
@@ -55,13 +63,37 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    String userBio = '';
     setState(() {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('$userId')
+          .collection("Profile")
+          .doc('$userId')
+          .get()
+          .then((DocumentSnapshot document) {
+        setState(() {
+          bio.text = document['bio'];
+          print(userBio);
+        });
+        return userBio;
+      });
+
       name.value = TextEditingValue(
         text: userName!,
         selection: TextSelection.fromPosition(
           TextPosition(offset: userName!.length),
         ),
       );
+
+      bio.value = TextEditingValue(
+        text: userBio,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: userBio.length),
+        ),
+      );
+
+      userBio = bio.text;
     });
   }
 
@@ -90,10 +122,18 @@ class _EditProfileState extends State<EditProfile> {
 
                   if (dpNew?.path == null) {
                   } else {
-                    // FirebaseAuth.instance.currentUser
-                    //     ?.updatePhotoURL('${dpNew!.path.characters}');
-                    print('${dpNew!.path.characters}');
+                    FirebaseAuth.instance.currentUser?.updatePhotoURL('$dp');
                   }
+
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc('$userId')
+                      .collection("Profile")
+                      .doc('$userId')
+                      .update({
+                    'name': name.text,
+                    'bio': bio.text,
+                  });
                 });
                 Navigator.pop(context);
               },
@@ -104,36 +144,27 @@ class _EditProfileState extends State<EditProfile> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           children: [
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  width: size.height * 0.08,
-                  height: size.height * 0.08,
+                  width: size.height * 0.1,
+                  height: size.height * 0.1,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    // image: DecorationImage(
-                    //      image: NetworkImage('$dp'), fit: BoxFit.fill),
+                    image: DecorationImage(
+                        image: NetworkImage('$dp'), fit: BoxFit.cover),
                   ),
-                  child: dpNew?.path == null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage('$dp'),
-                          radius: 200.0,
-                        )
-                      : CircleAvatar(
-                          backgroundImage: FileImage(dpNew!),
-                          radius: 200.0,
-                        ),
                 ),
+                SizedBox(height: size.height * 0.03),
                 GestureDetector(
                   onTap: () {
-                    getNewDp();
+                    getPermission();
                   },
                   child: Container(
-                    width: size.width * 0.6,
                     child: Text(
-                      'Edit Image',
+                      'Edit Profile Picture',
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
@@ -187,12 +218,14 @@ class _EditProfileState extends State<EditProfile> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: TextField(
-                        controller: description,
+                        controller: bio,
+                        maxLines: 3,
                         style: TextStyle(
                           color: theme.getTheme().brightness == Brightness.dark
                               ? Colors.white
                               : Colors.black,
                         ),
+                        keyboardType: TextInputType.multiline,
                         textCapitalization: TextCapitalization.sentences,
                         cursorColor:
                             theme.getTheme().brightness == Brightness.dark
@@ -223,5 +256,37 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  Future<String?> uploadFile(File image) async {
+    String downloadURL;
+    String filePath = "images/${auth.currentUser!.uid}";
+    setState(() {
+      uploadTask = fstorage.ref().child(filePath).putFile(image);
+    });
+    var imageUrl = await (await uploadTask).ref.getDownloadURL();
+    downloadURL = imageUrl.toString();
+
+    uploadToFirebase(downloadURL);
+  }
+
+  Future uploadToFirebase(downloadURL) async {
+    final CollectionReference users = FirebaseFirestore.instance
+        .collection('users')
+        .doc('$userId')
+        .collection("Profile");
+    final String uid = auth.currentUser!.uid;
+
+    String url = downloadURL;
+    await users.doc('$userId').update({
+      'dp': url,
+    });
+    final result = await users.doc(uid).get();
+    setState(() {
+      dp = url;
+    });
+
+    FirebaseAuth.instance.currentUser?.updatePhotoURL(url);
+    print('$dp');
   }
 }

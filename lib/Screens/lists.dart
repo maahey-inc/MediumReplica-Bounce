@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediumreplica/Models/articles.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +13,13 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  final auth = FirebaseAuth.instance;
+  String? uidUser = FirebaseAuth.instance.currentUser?.uid;
+  String? currUser = FirebaseAuth.instance.currentUser?.displayName;
+  String? dp = FirebaseAuth.instance.currentUser?.photoURL;
+
+  final CollectionReference collection =
+      FirebaseFirestore.instance.collection('users');
   int index = 0;
 
   @override
@@ -47,10 +57,13 @@ class _ListScreenState extends State<ListScreen> {
                     child: Container(
                       width: size.width * 0.4,
                       child: Center(
-                        child: Text(
-                          'Saved',
-                          style: TextStyle(
-                              color: index == 0 ? Colors.white : Colors.grey),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            'Saved',
+                            style: TextStyle(
+                                color: index == 0 ? Colors.white : Colors.grey),
+                          ),
                         ),
                       ),
                     ),
@@ -65,10 +78,13 @@ class _ListScreenState extends State<ListScreen> {
                     child: Container(
                       width: size.width * 0.4,
                       child: Center(
-                        child: Text(
-                          'Recently viewed',
-                          style: TextStyle(
-                              color: index == 1 ? Colors.white : Colors.grey),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            'Recently viewed',
+                            style: TextStyle(
+                                color: index == 1 ? Colors.white : Colors.grey),
+                          ),
                         ),
                       ),
                     ),
@@ -76,6 +92,113 @@ class _ListScreenState extends State<ListScreen> {
                 ],
               ),
             ),
+            index == 0
+                ? Expanded(
+                    child: Center(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: collection
+                            .doc(uidUser)
+                            .collection("Lists")
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          return !snapshot.hasData
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : snapshot.data?.docs.length == 0
+                                  ? Text('No Articles')
+                                  : Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: ListView.separated(
+                                        physics: BouncingScrollPhysics(),
+                                        separatorBuilder:
+                                            (BuildContext context, int index) {
+                                          return SizedBox(
+                                            height: 2,
+                                          );
+                                        },
+                                        itemCount: snapshot.data!.docs.length,
+                                        itemBuilder: (context, index) {
+                                          DocumentSnapshot doc =
+                                              snapshot.data!.docs[index];
+                                          return StackArticle(
+                                            doc: doc,
+                                            logo: snapshot.data!.docs[index]
+                                                ['dp'],
+                                            article: snapshot.data!.docs[index]
+                                                ['article'],
+                                            author: snapshot.data!.docs[index]
+                                                ['author'],
+                                            uid: snapshot.data!.docs[index]
+                                                ['uid'],
+                                            title: snapshot.data!.docs[index]
+                                                ['title'],
+                                            img: snapshot.data!.docs[index]
+                                                ['img'],
+                                            like: snapshot.data!.docs[index]
+                                                ['likes'],
+                                          );
+                                        },
+                                      ),
+                                    );
+                        },
+                      ),
+                    ),
+                  )
+                : Expanded(
+                    child: Center(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: collection
+                            .doc(uidUser)
+                            .collection("Recent")
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          return !snapshot.hasData
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : snapshot.data?.docs.length == 0
+                                  ? Text('Nothing viewed yet.')
+                                  : Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: ListView.separated(
+                                        physics: BouncingScrollPhysics(),
+                                        separatorBuilder:
+                                            (BuildContext context, int index) {
+                                          return SizedBox(
+                                            height: 2,
+                                          );
+                                        },
+                                        itemCount: snapshot.data!.docs.length,
+                                        itemBuilder: (context, index) {
+                                          DocumentSnapshot doc =
+                                              snapshot.data!.docs[index];
+                                          return StackArticle(
+                                            doc: doc,
+                                            logo: snapshot.data!.docs[index]
+                                                ['dp'],
+                                            article: snapshot.data!.docs[index]
+                                                ['article'],
+                                            author: snapshot.data!.docs[index]
+                                                ['author'],
+                                            uid: snapshot.data!.docs[index]
+                                                ['uid'],
+                                            title: snapshot.data!.docs[index]
+                                                ['title'],
+                                            img: snapshot.data!.docs[index]
+                                                ['img'],
+                                            like: snapshot.data!.docs[index]
+                                                ['likes'],
+                                          );
+                                        },
+                                      ),
+                                    );
+                        },
+                      ),
+                    ),
+                  )
           ],
         ),
       ),

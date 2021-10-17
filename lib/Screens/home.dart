@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:mediumreplica/Models/articles.dart';
+import 'package:mediumreplica/constants.dart';
 import 'package:mediumreplica/Screens/articleScreen.dart';
 import 'package:mediumreplica/Widgets/bottom_navbar.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
@@ -16,77 +19,96 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String themeTest = 'light';
+  User? uidUser = FirebaseAuth.instance.currentUser;
+  final CollectionReference collection =
+      FirebaseFirestore.instance.collection('users');
 
-  List<String> tags = [
-    'Mobile Apps',
-    'iOS',
-    'Andoid',
-    'macOS',
-    'Money',
-    'News',
-    'Education',
-    'Data Science',
-    'Art',
-    'Science',
-  ];
+  DocumentSnapshot? doc;
 
-  final List<Widget> getArticles = [
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-    StackArticle(
-      logo:
-          "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      author: 'Arthur Conan Doyle',
-      title: 'Flutter vs React',
-      img:
-          'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-      like: 54,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    collection.doc('${uidUser!.uid}').collection("tags").get().then((snapshot) {
+      for (DocumentSnapshot doc in snapshot.docs) {
+        if (tags.contains(doc.get('tag'))) {
+        } else {
+          setState(() {
+            tags.add('${doc.get("tag")}');
+          });
+        }
+      }
+    });
+  }
+
+  // final List<Widget> getArticles = [
+  //   StackArticle(
+  //     doc:doc!,
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     article: 'Hi',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  //   StackArticle(
+  //     doc:doc!,
+  //     article: 'Hi',
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  //   StackArticle(
+  //     doc:doc!,
+  //     article: 'Hi',
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  //   StackArticle(
+  //     doc:doc!,
+  //     article: 'Hi',
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  //   StackArticle(
+  //     doc:doc!,
+  //     article: 'Hi',
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  //   StackArticle(
+  //     doc:doc!,
+  //     article: 'Hi',
+  //     logo:
+  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+  //     author: 'Arthur Conan Doyle',
+  //     title: 'Flutter vs React',
+  //     img:
+  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+  //     like: 54,
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -133,33 +155,40 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Container(
                   height: size.height * 0.05,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: tags.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Colors.black12
-                                    : Colors.grey[600],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            child: Center(
-                              child: Text(
-                                tags[index],
+                  child: tags.length == 0
+                      ? Center(
+                          child: Text(
+                          'No tags selected',
+                          style: TextStyle(color: Colors.grey),
+                        ))
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: tags.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black12
+                                      : Colors.grey[600],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  child: Center(
+                                    child: Text(
+                                      tags[index],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
               ),
               Padding(
@@ -172,21 +201,6 @@ class _HomeState extends State<Home> {
                         //     context,
                         //     MaterialPageRoute(
                         //         builder: (context) => ArticleScreen()));
-
-                        //theme test
-                        if (themeTest == 'light') {
-                          theme.setDarkMode();
-                          print('dark');
-                          setState(() {
-                            themeTest = 'dark';
-                          });
-                        } else if (themeTest == 'dark') {
-                          theme.setLightMode();
-                          print('light');
-                          setState(() {
-                            themeTest = 'light';
-                          });
-                        }
                       },
                       child: Text(
                         'TOP STORIES',
@@ -248,14 +262,14 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
-              Container(
-                height: size.height * 0.34,
-                child: StackedCardCarousel(
-                  initialOffset: 10,
-                  spaceBetweenItems: 110,
-                  items: getArticles,
-                ),
-              ),
+              // Container(
+              //   height: size.height * 0.34,
+              //   child: StackedCardCarousel(
+              //     initialOffset: 10,
+              //     spaceBetweenItems: 110,
+              //     items: getArticles,
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -1,7 +1,9 @@
+import 'package:mediumreplica/Models/articles.dart';
+import 'package:mediumreplica/Screens/settings.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:mediumreplica/Screens/settings.dart';
 import 'package:mediumreplica/Screens/write_article.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
 import 'package:provider/provider.dart';
@@ -15,8 +17,34 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final auth = FirebaseAuth.instance;
+  String? uidUser = FirebaseAuth.instance.currentUser?.uid;
   String? currUser = FirebaseAuth.instance.currentUser?.displayName;
   String? dp = FirebaseAuth.instance.currentUser?.photoURL;
+
+  String bio = '';
+  int followers = 0;
+  int following = 0;
+
+  final CollectionReference collection =
+      FirebaseFirestore.instance.collection('users');
+
+  @override
+  void initState() {
+    super.initState();
+
+    final DocumentReference collectionDoc =
+        collection.doc(uidUser).collection("Profile").doc(uidUser);
+    collectionDoc.get().then((DocumentSnapshot document) {
+      setState(() {
+        bio = document['bio'];
+        followers = document['followers'];
+        following = document['following'];
+        print(bio);
+      });
+      return bio;
+    });
+    // print(userBio);
+  }
 
   Future<void> getCurrentUserInfo() async {
     User user = auth.currentUser!;
@@ -45,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Settings()),
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
                 );
               },
               icon: Icon(Icons.settings)),
@@ -72,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Colors.grey,
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                              image: NetworkImage('$dp'), fit: BoxFit.fill),
+                              image: NetworkImage('$dp'), fit: BoxFit.cover),
                         ),
                       ),
                       Container(
@@ -95,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Container(
                       width: size.width * 0.85,
                       child: Text(
-                        'Community Manager at Google Developers, Flutter Enthusiast.',
+                        bio,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                         softWrap: false,
@@ -117,13 +145,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('3 Followers'),
+                  Text('$followers Followers'),
                   VerticalDivider(
                     color: theme.getTheme().brightness == Brightness.dark
                         ? Colors.white54
                         : Colors.black54,
                   ),
-                  Text('9 Following'),
+                  Text('$following Following'),
                   VerticalDivider(
                     color: theme.getTheme().brightness == Brightness.dark
                         ? Colors.white54
@@ -168,7 +196,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Text(
                             'Articles',
                             style: TextStyle(
-                                color: index == 0 ? Colors.white : Colors.grey),
+                                color: index == 0
+                                    ? theme.getTheme().brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black
+                                    : Colors.grey),
                           ),
                         ),
                       ),
@@ -200,7 +233,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Text(
                             'Videos',
                             style: TextStyle(
-                                color: index == 1 ? Colors.white : Colors.grey),
+                                color: index == 1
+                                    ? theme.getTheme().brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black
+                                    : Colors.grey),
                           ),
                         ),
                       ),
@@ -209,6 +247,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+            index == 0
+                ? Flexible(
+                    child: Center(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: collection
+                            .doc(uidUser)
+                            .collection("Articles")
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          return !snapshot.hasData
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : snapshot.data?.docs.length == 0
+                                  ? Text('No Articles')
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ListView.separated(
+                                        physics: BouncingScrollPhysics(),
+                                        separatorBuilder:
+                                            (BuildContext context, int index) {
+                                          return SizedBox(
+                                            height: 2,
+                                          );
+                                        },
+                                        itemCount: snapshot.data!.docs.length,
+                                        itemBuilder: (context, index) {
+                                          DocumentSnapshot doc =
+                                              snapshot.data!.docs[index];
+                                          return StackArticle(
+                                            doc: doc,
+                                            logo: snapshot.data!.docs[index]
+                                                ['dp'],
+                                            article: snapshot.data!.docs[index]
+                                                ['article'],
+                                            author: snapshot.data!.docs[index]
+                                                ['author'],
+                                            uid: snapshot.data!.docs[index]
+                                                ['uid'],
+                                            title: snapshot.data!.docs[index]
+                                                ['title'],
+                                            img: snapshot.data!.docs[index]
+                                                ['img'],
+                                            like: snapshot.data!.docs[index]
+                                                ['likes'],
+                                          );
+                                        },
+                                      ),
+                                    );
+                        },
+                      ),
+                    ),
+                  )
+                : Flexible(
+                    child: Container(
+                      child: Center(child: Text('No Videos')),
+                    ),
+                  ),
           ],
         ),
       ),
