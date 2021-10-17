@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mediumreplica/Models/articles.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
@@ -12,7 +13,13 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final auth = FirebaseAuth.instance;
+  User? uidUser = FirebaseAuth.instance.currentUser;
+
+  final CollectionReference collection =
+      FirebaseFirestore.instance.collection('tags');
   DocumentSnapshot? doc;
+  String? searchKey;
 
   bool searchState = false;
 
@@ -78,8 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 onChanged: (text) async {
                   setState(() {
-                    // searchKey = text.substring(0, 1).toUpperCase() +
-                    //     text.substring(1).toLowerCase();
+                    searchKey = text;
                   });
                 },
               ),
@@ -105,26 +111,76 @@ class _SearchScreenState extends State<SearchScreen> {
                     : Colors.black54,
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemCount: 8,
-                itemBuilder: (context, index) {
-                  return StackArticle(
-                    doc: doc!,
-                    uid: '345',
-                    article: 'Hi',
-                    logo:
-                        "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                    author: 'Arthur Conan Doyle',
-                    title: 'Flutter vs React',
-                    img:
-                        'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-                    like: 54,
-                  );
+            Flexible(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: (searchKey != "" && searchKey != null)
+                    ? collection.startAt([searchKey]).endAt(
+                        [searchKey! + '\uf8ff']).snapshots()
+                    : collection
+                        .doc()
+                        .collection('Articles')
+                        .orderBy('tag')
+                        .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  return !snapshot.hasData
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : snapshot.data!.docs.length == 0
+                          ? Center(child: Text('No Articles'))
+                          : Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListView.separated(
+                                physics: BouncingScrollPhysics(),
+                                separatorBuilder:
+                                    (BuildContext context, int index) {
+                                  return SizedBox(
+                                    height: 2,
+                                  );
+                                },
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot doc =
+                                      snapshot.data!.docs[index];
+                                  return StackArticle(
+                                    doc: doc,
+                                    logo: snapshot.data!.docs[index]['dp'],
+                                    article: snapshot.data!.docs[index]
+                                        ['article'],
+                                    author: snapshot.data!.docs[index]
+                                        ['author'],
+                                    uid: snapshot.data!.docs[index]['uid'],
+                                    title: snapshot.data!.docs[index]['title'],
+                                    img: snapshot.data!.docs[index]['img'],
+                                    like: snapshot.data!.docs[index]['likes'],
+                                  );
+                                },
+                              ),
+                            );
                 },
               ),
             ),
+            // Expanded(
+            //   child: ListView.builder(
+            //     physics: BouncingScrollPhysics(),
+            //     itemCount: 8,
+            //     itemBuilder: (context, index) {
+            //       return StackArticle(
+            //         doc: doc!,
+            //         uid: '345',
+            //         article: 'Hi',
+            //         logo:
+            //             "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+            //         author: 'Arthur Conan Doyle',
+            //         title: 'Flutter vs React',
+            //         img:
+            //             'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+            //         like: 54,
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

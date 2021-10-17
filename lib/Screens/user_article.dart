@@ -51,9 +51,7 @@ class _UserArticleState extends State<UserArticle> {
   @override
   void initState() {
     super.initState();
-    final document = loadDocument();
-    print(widget.img);
-    print(widget.doc!.get('img'));
+    // final document = loadDocument();
 
     loadDocument().then((doc) {
       setState(() {
@@ -128,6 +126,23 @@ class _UserArticleState extends State<UserArticle> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey,
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image(
+                        image: NetworkImage(widget.doc!.get('img')),
+                        fit: BoxFit.cover,
+                      )),
                 ),
               ),
               Container(

@@ -90,82 +90,92 @@ class _WrtieArticleScreenState extends State<WrtieArticleScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return SimpleDialog(
-                      title: Text('Add upto 5 tags'),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: size.width * 0.1,
-                            child: TextField(
-                              controller: tag1,
-                              decoration: InputDecoration(hintText: 'Tag1'),
+              if (title.text.isNotEmpty && img != null) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SimpleDialog(
+                        title: Text('Add upto 5 tags'),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              width: size.width * 0.1,
+                              child: TextField(
+                                controller: tag1,
+                                decoration: InputDecoration(hintText: 'Tag1'),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: size.width * 0.1,
-                            child: TextField(
-                              controller: tag2,
-                              decoration: InputDecoration(hintText: 'Tag2'),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              width: size.width * 0.1,
+                              child: TextField(
+                                controller: tag2,
+                                decoration: InputDecoration(hintText: 'Tag2'),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: size.width * 0.1,
-                            child: TextField(
-                              controller: tag3,
-                              decoration: InputDecoration(hintText: 'Tag3'),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              width: size.width * 0.1,
+                              child: TextField(
+                                controller: tag3,
+                                decoration: InputDecoration(hintText: 'Tag3'),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: size.width * 0.1,
-                            child: TextField(
-                              controller: tag4,
-                              decoration: InputDecoration(hintText: 'Tag4'),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              width: size.width * 0.1,
+                              child: TextField(
+                                controller: tag4,
+                                decoration: InputDecoration(hintText: 'Tag4'),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: size.width * 0.1,
-                            child: TextField(
-                              controller: tag5,
-                              decoration: InputDecoration(hintText: 'Tag5'),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              width: size.width * 0.1,
+                              child: TextField(
+                                controller: tag5,
+                                decoration: InputDecoration(hintText: 'Tag5'),
+                              ),
                             ),
                           ),
-                        ),
-                        SimpleDialogOption(
-                          onPressed: () async {
-                            await saveDocument(context);
+                          SimpleDialogOption(
+                            onPressed: () async {
+                              await saveDocument(context);
 
-                            await saveTags(context);
-                            Navigator.pop(context);
+                              await saveTags(context);
+                              Navigator.pop(context);
 
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'Done',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 18,
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Done',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  });
+                        ],
+                      );
+                    });
+              } else {
+                if (title.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Add Title to your Article')));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Add image to your Article')));
+                }
+              }
             },
             child: Text(
               'Publish',
@@ -284,7 +294,7 @@ class _WrtieArticleScreenState extends State<WrtieArticleScreen> {
 
   Future<void> saveDocument(BuildContext context) async {
     final contents = jsonEncode(controller.document);
-    if (title.text.isNotEmpty && contents.trim().isNotEmpty) {
+    if (title.text.isNotEmpty && contents.trim().isNotEmpty && img != null) {
       await FirebaseFirestore.instance
           .collection('users')
           .doc('${currUser!.uid}')

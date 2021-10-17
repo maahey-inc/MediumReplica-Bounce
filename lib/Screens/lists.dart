@@ -152,6 +152,7 @@ class _ListScreenState extends State<ListScreen> {
                         stream: collection
                             .doc(uidUser)
                             .collection("Recent")
+                            .orderBy('time', descending: true)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

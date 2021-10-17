@@ -26,6 +26,22 @@ class _TagsScreenState extends State<TagsScreen> {
   List<dynamic> tagSelected = [];
 
   @override
+  void initState() {
+    super.initState();
+
+    collection.doc(uidUser!.uid).collection("tags").get().then((snapshot) {
+      for (DocumentSnapshot doc in snapshot.docs) {
+        if (tags.contains(doc.get('tag'))) {
+        } else {
+          setState(() {
+            tags.add('${doc.get("tag")}');
+          });
+        }
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
@@ -58,7 +74,7 @@ class _TagsScreenState extends State<TagsScreen> {
                     } else {
                       await FirebaseFirestore.instance
                           .collection('users')
-                          .doc('${uidUser!.uid}')
+                          .doc(uidUser!.uid)
                           .collection("tags")
                           .doc()
                           .set({'tag': tagSelected[i]});

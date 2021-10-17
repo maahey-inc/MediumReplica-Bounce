@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mediumreplica/Screens/articleScreen.dart';
+import 'package:intl/intl.dart';
 import 'package:mediumreplica/Screens/user_article.dart';
 
 class Article {
@@ -96,6 +96,7 @@ class StackArticle extends StatelessWidget {
             .doc(doc.id)
             .set({
           'article': article,
+          'time': DateFormat("MM-d-yyyy hh:mm a").format(DateTime.now()),
           'title': title,
           'likes': like,
           'uid': uid,

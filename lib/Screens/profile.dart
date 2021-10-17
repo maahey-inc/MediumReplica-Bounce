@@ -1,4 +1,5 @@
 import 'package:mediumreplica/Models/articles.dart';
+import 'package:mediumreplica/Screens/lists.dart';
 import 'package:mediumreplica/Screens/settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,6 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         collection.doc(uidUser).collection("Profile").doc(uidUser);
     collectionDoc.get().then((DocumentSnapshot document) {
       setState(() {
+        uidUser = FirebaseAuth.instance.currentUser?.uid;
+        currUser = FirebaseAuth.instance.currentUser?.displayName;
         bio = document['bio'];
         followers = document['followers'];
         following = document['following'];
@@ -157,7 +160,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? Colors.white54
                         : Colors.black54,
                   ),
-                  Text('Lists'),
+                  InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListScreen()));
+                      },
+                      child: Text('Lists')),
                 ],
               ),
             ),
@@ -254,6 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         stream: collection
                             .doc(uidUser)
                             .collection("Articles")
+                            .orderBy('time', descending: true)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
