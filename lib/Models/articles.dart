@@ -95,14 +95,6 @@ class StackArticle extends StatelessWidget {
             .collection("Recent")
             .doc(doc.id)
             .set({
-          'article': article,
-          'time': DateFormat("MM-d-yyyy hh:mm a").format(DateTime.now()),
-          'title': title,
-          'likes': like,
-          'uid': uid,
-          'author': author,
-          'dp': logo,
-          'img': doc.get('img'),
           'doc': doc.id,
         });
       },

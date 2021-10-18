@@ -425,13 +425,6 @@ class _UserArticleState extends State<UserArticle> {
         .collection("Lists")
         .doc(widget.doc!.id)
         .set({
-      'article': contents,
-      'title': widget.title,
-      'likes': widget.like,
-      'uid': widget.uid,
-      'author': widget.author,
-      'dp': widget.logo,
-      'img': widget.doc!.get('img'),
       'doc': widget.doc!.id,
     });
   }

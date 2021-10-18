@@ -113,13 +113,14 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             Flexible(
               child: StreamBuilder<QuerySnapshot>(
-                stream: (searchKey != "" && searchKey != null)
-                    ? collection.startAt([searchKey]).endAt(
-                        [searchKey! + '\uf8ff']).snapshots()
-                    : collection
-                        .doc()
+                stream:
+                    //  (searchKey != "" && searchKey != null)
+                    //     ? collection.startAt([searchKey]).endAt(
+                    //         [searchKey! + '\uf8ff']).snapshots()
+                    //     :
+                    collection
+                        .doc('flutter')
                         .collection('Articles')
-                        .orderBy('tag')
                         .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {

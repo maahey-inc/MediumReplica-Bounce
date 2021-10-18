@@ -81,6 +81,14 @@ class _TagsScreenState extends State<TagsScreen> {
                       break;
                     }
                   }
+                  if (tags.length == 0) {
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(uidUser!.uid)
+                        .collection("tags")
+                        .doc()
+                        .set({'tag': tagSelected[i]});
+                  }
                 }
                 Navigator.pop(context);
               },
