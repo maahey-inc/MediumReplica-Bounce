@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mediumreplica/Models/articles.dart';
 import 'package:mediumreplica/Shared%20Prefrences/theme_manager.dart';
+import 'package:mediumreplica/constants.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -22,6 +23,35 @@ class _SearchScreenState extends State<SearchScreen> {
   String? searchKey;
 
   bool searchState = false;
+
+  List<Recommend> recList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    recList.clear();
+    collection.get().then((snapshot) {
+      for (DocumentSnapshot doc1 in snapshot.docs) {
+        collection.doc(doc1.id).collection('Articles').get().then((snapshot) {
+          for (DocumentSnapshot doc2 in snapshot.docs) {
+            Recommend list = Recommend(
+              dp: doc2.get('dp'),
+              author: doc2.get('author'),
+              article: doc2.get('article'),
+              img: doc2.get('img'),
+              like: doc2.get('likes'),
+              title: doc2.get('title'),
+              uid: doc2.get('uid'),
+              doc: doc2,
+            );
+
+            recList.add(list);
+            setState(() {});
+          }
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,57 +141,75 @@ class _SearchScreenState extends State<SearchScreen> {
                     : Colors.black54,
               ),
             ),
-            Flexible(
-              child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    //  (searchKey != "" && searchKey != null)
-                    //     ? collection.startAt([searchKey]).endAt(
-                    //         [searchKey! + '\uf8ff']).snapshots()
-                    //     :
-                    collection
-                        .doc('flutter')
-                        .collection('Articles')
-                        .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  return !snapshot.hasData
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : snapshot.data!.docs.length == 0
-                          ? Center(child: Text('No Articles'))
-                          : Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListView.separated(
-                                physics: BouncingScrollPhysics(),
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return SizedBox(
-                                    height: 2,
-                                  );
-                                },
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  DocumentSnapshot doc =
-                                      snapshot.data!.docs[index];
-                                  return StackArticle(
-                                    doc: doc,
-                                    logo: snapshot.data!.docs[index]['dp'],
-                                    article: snapshot.data!.docs[index]
-                                        ['article'],
-                                    author: snapshot.data!.docs[index]
-                                        ['author'],
-                                    uid: snapshot.data!.docs[index]['uid'],
-                                    title: snapshot.data!.docs[index]['title'],
-                                    img: snapshot.data!.docs[index]['img'],
-                                    like: snapshot.data!.docs[index]['likes'],
-                                  );
-                                },
-                              ),
-                            );
-                },
-              ),
+            Expanded(
+              child: recList.length == 0
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: recList.length,
+                      itemBuilder: (_, index) {
+                        return StackArticle(
+                          doc: recList[index].doc,
+                          logo: recList[index].dp,
+                          article: recList[index].article,
+                          author: recList[index].author,
+                          uid: recList[index].uid,
+                          title: recList[index].title,
+                          img: recList[index].img,
+                          like: recList[index].like,
+                        );
+                      }),
             ),
+            // Flexible(
+            //   child: StreamBuilder<QuerySnapshot>(
+            //     stream:
+            //         //  (searchKey != "" && searchKey != null)
+            //         //     ? collection.startAt([searchKey]).endAt(
+            //         //         [searchKey! + '\uf8ff']).snapshots()
+            //         //     :
+            //         collection.doc().collection('Articles').snapshots(),
+            //     builder: (BuildContext context,
+            //         AsyncSnapshot<QuerySnapshot> snapshot) {
+            //       return !snapshot.hasData
+            //           ? Center(
+            //               child: CircularProgressIndicator(),
+            //             )
+            //           : snapshot.data!.docs.length == 0
+            //               ? Center(child: Text('No Articles'))
+            //               : Padding(
+            //                   padding: const EdgeInsets.all(8.0),
+            //                   child: ListView.separated(
+            //                     physics: BouncingScrollPhysics(),
+            //                     separatorBuilder:
+            //                         (BuildContext context, int index) {
+            //                       return SizedBox(
+            //                         height: 2,
+            //                       );
+            //                     },
+            //                     itemCount: snapshot.data!.docs.length,
+            //                     itemBuilder: (context, index) {
+            //                       DocumentSnapshot doc =
+            //                           snapshot.data!.docs[index];
+            //                       return StackArticle(
+            //                         doc: doc,
+            //                         logo: snapshot.data!.docs[index]['dp'],
+            //                         article: snapshot.data!.docs[index]
+            //                             ['article'],
+            //                         author: snapshot.data!.docs[index]
+            //                             ['author'],
+            //                         uid: snapshot.data!.docs[index]['uid'],
+            //                         title: snapshot.data!.docs[index]['title'],
+            //                         img: snapshot.data!.docs[index]['img'],
+            //                         like: snapshot.data!.docs[index]['likes'],
+            //                       );
+            //                     },
+            //                   ),
+            //                 );
+            //     },
+            //   ),
+            // ),
             // Expanded(
             //   child: ListView.builder(
             //     physics: BouncingScrollPhysics(),

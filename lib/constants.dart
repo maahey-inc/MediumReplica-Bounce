@@ -35,3 +35,19 @@ class Recent {
       required this.doc,
       required this.like});
 }
+
+class Recommend {
+  String dp, author, article, img, title, uid;
+  DocumentSnapshot doc;
+  int like;
+
+  Recommend(
+      {required this.dp,
+      required this.author,
+      required this.article,
+      required this.img,
+      required this.title,
+      required this.uid,
+      required this.doc,
+      required this.like});
+}

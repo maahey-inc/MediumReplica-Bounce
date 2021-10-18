@@ -40,12 +40,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
         uidUser = FirebaseAuth.instance.currentUser?.uid;
         currUser = FirebaseAuth.instance.currentUser?.displayName;
         bio = document['bio'];
-        followers = document['followers'];
-        following = document['following'];
-        print(bio);
       });
       return bio;
     });
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uidUser)
+        .collection('following')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot doc in snapshot.docs) {
+        setState(() {
+          following = snapshot.docs.length;
+        });
+      }
+    });
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uidUser)
+        .collection('followers')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot doc in snapshot.docs) {
+        setState(() {
+          followers = snapshot.docs.length;
+        });
+      }
+    });
+
     // print(userBio);
   }
 

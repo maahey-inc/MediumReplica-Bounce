@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeModel {
   final darkTheme = ThemeData(
+    canvasColor: Colors.black,
     primaryColor: Colors.black,
     backgroundColor: const Color(0xFF212121),
     dividerColor: Colors.grey[700],
@@ -21,6 +22,7 @@ class ThemeModel {
   );
 
   final lightTheme = ThemeData(
+    canvasColor: Colors.white,
     primaryColor: Colors.white,
     backgroundColor: const Color(0xFFFAFAFA),
     dividerColor: Colors.black54,

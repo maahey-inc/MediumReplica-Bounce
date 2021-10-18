@@ -30,13 +30,10 @@ class _RecentListState extends State<RecentList> {
       for (DocumentSnapshot doc1 in snapshot.docs) {
         doc1.reference.get();
 
-        print(doc1.id);
         collection.doc(uidUser).collection('Articles').get().then((snapshot) {
           for (DocumentSnapshot doc2 in snapshot.docs) {
             if (doc1.id == doc2.id) {
               doc2.reference.get();
-
-              print(doc2.id);
 
               Recent list = Recent(
                 dp: doc2.get('dp'),
@@ -64,7 +61,7 @@ class _RecentListState extends State<RecentList> {
       padding: EdgeInsets.all(8),
       child: recentList.length == 0
           ? Center(
-              child: Text('Nothing viewed yet'),
+              child: CircularProgressIndicator(),
             )
           : ListView.builder(
               physics: BouncingScrollPhysics(),

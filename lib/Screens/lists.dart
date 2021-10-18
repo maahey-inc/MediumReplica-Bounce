@@ -34,6 +34,9 @@ class _ListScreenState extends State<ListScreen> {
           elevation: 0,
           title: Text('Your Lists'),
           bottom: TabBar(
+            indicatorColor: theme.getTheme().brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
             tabs: [
               Tab(
                 icon: Icon(Icons.bookmarks),

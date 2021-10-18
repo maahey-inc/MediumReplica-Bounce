@@ -51,7 +51,21 @@ class _UserArticleState extends State<UserArticle> {
   @override
   void initState() {
     super.initState();
-    // final document = loadDocument();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${uidUser!.uid}')
+        .collection('following')
+        .get()
+        .then((snapshot) {
+      for (var doc in snapshot.docs) {
+        if (widget.uid == doc.get('uid')) {
+          doc.get('uid');
+          setState(() {
+            visible = false;
+          });
+        }
+      }
+    });
 
     loadDocument().then((doc) {
       setState(() {
@@ -335,7 +349,7 @@ class _UserArticleState extends State<UserArticle> {
                                   : Colors.black,
                         ),
                         tooltip: 'Follow',
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             visible = false;
 
@@ -343,6 +357,22 @@ class _UserArticleState extends State<UserArticle> {
                               content:
                                   Text('Author "${widget.author}" Followed'),
                             ));
+                          });
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc('${uidUser!.uid}')
+                              .collection('following')
+                              .add({
+                            'author': widget.author,
+                            'uid': widget.uid,
+                          });
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(widget.uid)
+                              .collection('followers')
+                              .add({
+                            'author': '${uidUser!.displayName}',
+                            'uid': '${uidUser!.uid}',
                           });
                         },
                       ),

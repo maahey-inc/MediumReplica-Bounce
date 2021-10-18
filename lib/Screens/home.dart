@@ -39,76 +39,55 @@ class _HomeState extends State<Home> {
         }
       }
     });
+    List<StackArticle> dataList = [];
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${uidUser!.uid}')
+        .collection('following')
+        .get()
+        .then((snapshot) {
+      for (var doc in snapshot.docs) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(doc.get('uid'))
+            .collection('Articles')
+            .get()
+            .then((snapshot) {
+          for (DocumentSnapshot doc2 in snapshot.docs) {
+            StackArticle list = StackArticle(
+              logo: doc2.get('dp'),
+              author: doc2.get('author'),
+              article: doc2.get('article'),
+              img: doc2.get('img'),
+              like: doc2.get('likes'),
+              title: doc2.get('title'),
+              uid: doc2.get('uid'),
+              doc: doc2,
+            );
+
+            // dataList.add(list);
+            getArticles.add(list);
+            setState(() {});
+          }
+        });
+      }
+    });
   }
 
-  // final List<Widget> getArticles = [
-  //   StackArticle(
-  //     doc:doc!,
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     article: 'Hi',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  //   StackArticle(
-  //     doc:doc!,
-  //     article: 'Hi',
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  //   StackArticle(
-  //     doc:doc!,
-  //     article: 'Hi',
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  //   StackArticle(
-  //     doc:doc!,
-  //     article: 'Hi',
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  //   StackArticle(
-  //     doc:doc!,
-  //     article: 'Hi',
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  //   StackArticle(
-  //     doc:doc!,
-  //     article: 'Hi',
-  //     logo:
-  //         "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  //     author: 'Arthur Conan Doyle',
-  //     title: 'Flutter vs React',
-  //     img:
-  //         'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
-  //     like: 54,
-  //   ),
-  // ];
+  final List<Widget> getArticles = [
+    // StackArticle(
+    //   doc: doc!,
+    //   logo:
+    //       "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGdpcmwlMjBpbiUyMGhvb2RpZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+    //   author: 'Arthur Conan Doyle',
+    //   article: 'Hi',
+    //   title: 'Flutter vs React',
+    //   img:
+    //       'https://www.thedroidsonroids.com/wp-content/uploads/2019/06/flutter_blog-react-vs-flutter.png',
+    //   like: 54,
+    // ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -262,14 +241,16 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
-              // Container(
-              //   height: size.height * 0.34,
-              //   child: StackedCardCarousel(
-              //     initialOffset: 10,
-              //     spaceBetweenItems: 110,
-              //     items: getArticles,
-              //   ),
-              // ),
+              Container(
+                height: size.height * 0.34,
+                child: getArticles.length == 0
+                    ? CircularProgressIndicator()
+                    : StackedCardCarousel(
+                        initialOffset: 10,
+                        spaceBetweenItems: 110,
+                        items: getArticles,
+                      ),
+              ),
             ],
           ),
         ),
